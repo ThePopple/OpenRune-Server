@@ -4,9 +4,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.rsprot.protocol.util.CombinedId
 import org.alter.game.model.entity.Player
 import org.alter.game.pluginnew.MenuOption
+import org.alter.game.pluginnew.PluginEvent
+import org.alter.game.pluginnew.event.EventListener
 import org.alter.game.pluginnew.event.PlayerEvent
 import org.alter.rscm.RSCM
 import org.alter.rscm.RSCM.asRSCM
+import org.alter.rscm.RSCM.requireRSCM
+import org.alter.rscm.RSCMType
 
 enum class ContainerType(val id: String) {
     INVENTORY("interfaces.inventory"),
@@ -44,6 +48,17 @@ data class ButtonClickEvent(
                 ItemClickEvent(item, slot, option, containerType, player).post()
             }
         }
+    }
+}
+
+fun PluginEvent.onButton(
+    componentID: String,
+    action: suspend ButtonClickEvent.() -> Unit
+): EventListener<ButtonClickEvent> {
+    requireRSCM(RSCMType.COMPONENTS,componentID)
+    return on<ButtonClickEvent> {
+        where { component.combinedId == componentID.asRSCM() }
+        then { action(this) }
     }
 }
 

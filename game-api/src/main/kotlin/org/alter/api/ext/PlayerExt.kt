@@ -13,6 +13,7 @@ import net.rsprot.protocol.game.outgoing.sound.MidiSongV2
 import net.rsprot.protocol.game.outgoing.sound.SynthSound
 import net.rsprot.protocol.game.outgoing.varp.VarpLarge
 import net.rsprot.protocol.game.outgoing.varp.VarpSmall
+import net.rsprot.protocol.util.CombinedId
 import org.alter.api.*
 import org.alter.api.cfg.Song
 import org.alter.api.cfg.Varbit
@@ -33,6 +34,9 @@ import org.alter.rscm.RSCM.getRSCM
 import org.alter.game.model.timer.SKULL_ICON_DURATION_TIMER
 import org.alter.game.rsprot.RsModIndexedObjectProvider
 import org.alter.game.rsprot.RsModObjectProvider
+import org.alter.rscm.RSCM.asRSCM
+import org.alter.rscm.RSCM.requireRSCM
+import org.alter.rscm.RSCMType
 import kotlin.math.floor
 
 /**
@@ -137,6 +141,18 @@ private fun splitEventMask(events: Int): Pair<Int, Int> {
 }
 
 fun Player.setInterfaceEvents(
+    componentName: String,
+    from: Int,
+    to: Int,
+    setting: Int,
+) {
+    requireRSCM(RSCMType.COMPONENTS,componentName)
+    val combined = CombinedId(componentName.asRSCM())
+    setInterfaceEvents(combined.interfaceId,combined.combinedId,from,to,setting)
+}
+
+
+fun Player.setInterfaceEvents(
     interfaceId: Int,
     component: Int,
     from: Int,
@@ -194,6 +210,17 @@ fun Player.setInterfaceEvents(
         )
     )
 }
+
+fun Player.setInterfaceEvents(
+    componentName: String,
+    range: IntRange,
+    setting: InterfaceEvent,
+) {
+    requireRSCM(RSCMType.COMPONENTS,componentName)
+    val combined = CombinedId(componentName.asRSCM())
+    setInterfaceEvents(combined.interfaceId,combined.combinedId,range,setting)
+}
+
 
 fun Player.setInterfaceEvents(
     interfaceId: Int,
@@ -273,15 +300,36 @@ fun Player.setComponentAnim(
  *
  * as it holds logic that must be handled for certain [InterfaceDestination]s.
  */
+
+fun Player.openInterface(
+    interfaceName: String,
+    dest: InterfaceDestination,
+    fullscreen: Boolean = false
+) {
+    requireRSCM(RSCMType.INTERFACES,interfaceName)
+    openInterface(interfaceName.asRSCM(), dest, fullscreen)
+}
+
 fun Player.openInterface(
     interfaceId: Int,
     dest: InterfaceDestination,
     fullscreen: Boolean = false,
 ) {
+
     val displayMode = if (!fullscreen || dest.fullscreenChildId == -1) interfaces.displayMode else DisplayMode.FULLSCREEN
     val child = getChildId(dest, displayMode)
     val parent = getDisplayComponentId(displayMode)
     openInterface(parent, child, interfaceId, if (dest.clickThrough) 1 else 0, isModal = dest == InterfaceDestination.MAIN_SCREEN)
+}
+
+fun Player.openInterface(
+    interfaceName: String,
+    dest: InterfaceDestination,
+    fullscreen: Boolean = false,
+    isModal: Boolean = false
+) {
+    requireRSCM(RSCMType.INTERFACES,interfaceName)
+    openInterface(interfaceName.asRSCM(), dest, fullscreen, isModal)
 }
 
 fun Player.openInterface(
@@ -660,6 +708,8 @@ fun Player.syncVarp(id: Int) {
     setVarp(id, getVarp(id))
 }
 
+fun Player.getVarbit(name: String) = getVarbit(name.asRSCM())
+
 fun Player.getVarbit(id: Int): Int {
     val def = ServerCacheManager.getVarbit(id)!!
     return varps.getBit(def.varp, def.startBit, def.endBit)
@@ -682,6 +732,9 @@ fun Player.decrementVarbit(
     setVarbit(id, dec)
     return dec
 }
+
+fun Player.setVarbit(name: String, value: Int) = setVarbit(name.asRSCM(), value)
+
 
 fun Player.setVarbit(
     id: Int,
