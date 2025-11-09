@@ -16,8 +16,6 @@ import net.rsprot.protocol.game.outgoing.varp.VarpSmall
 import net.rsprot.protocol.util.CombinedId
 import org.alter.api.*
 import org.alter.api.cfg.Song
-import org.alter.api.cfg.Varbit
-import org.alter.api.cfg.Varp
 import org.alter.game.model.World
 import org.alter.game.model.attr.CHANGE_LOGGING
 import org.alter.game.model.attr.COMBAT_TARGET_FOCUS_ATTR
@@ -285,9 +283,9 @@ fun Player.setComponentPlayerHead(
 fun Player.setComponentAnim(
     interfaceId: Int,
     component: Int,
-    anim: Int,
+    anim: String,
 ) {
-    write(IfSetAnim(interfaceId = interfaceId, componentId = component, anim = anim))
+    write(IfSetAnim(interfaceId = interfaceId, componentId = component, anim = anim.asRSCM()))
 }
 
 /**
@@ -688,35 +686,40 @@ fun Player.playJingle(id: Int) {
     write(MidiJingle(id))
 }
 
-fun Player.getVarp(id: Int): Int = varps.getState(id)
+fun Player.getVarp(id: String): Int {
+    requireRSCM(RSCMType.VARPTYPES, id)
+    return varps.getState(id.asRSCM())
+}
 
 fun Player.setVarp(
-    id: Int,
+    id: String,
     value: Int,
 ) {
+    requireRSCM(RSCMType.VARPTYPES, id)
     if (attr.has(CHANGE_LOGGING) && getVarp(id) != value) {
         message("Varp: $id was changed from: ${getVarp(id)} to $value")
     }
-    varps.setState(id, value)
+    varps.setState(id.asRSCM(), value)
 }
 
-fun Player.toggleVarp(id: Int) {
-    varps.setState(id, varps.getState(id) xor 1)
+fun Player.toggleVarp(id: String) {
+    requireRSCM(RSCMType.VARPTYPES, id)
+    varps.setState(id.asRSCM(), varps.getState(id.asRSCM()) xor 1)
 }
 
-fun Player.syncVarp(id: Int) {
+fun Player.syncVarp(id: String) {
+    requireRSCM(RSCMType.VARPTYPES, id)
     setVarp(id, getVarp(id))
 }
 
-fun Player.getVarbit(name: String) = getVarbit(name.asRSCM())
-
-fun Player.getVarbit(id: Int): Int {
-    val def = ServerCacheManager.getVarbit(id)!!
+fun Player.getVarbit(id: String): Int {
+    requireRSCM(RSCMType.VARBITTYPES, id)
+    val def = ServerCacheManager.getVarbit(id.asRSCM())!!
     return varps.getBit(def.varp, def.startBit, def.endBit)
 }
 
 fun Player.incrementVarbit(
-    id: Int,
+    id: String,
     amount: Int = 1,
 ): Int {
     val inc = getVarbit(id) + amount
@@ -725,7 +728,7 @@ fun Player.incrementVarbit(
 }
 
 fun Player.decrementVarbit(
-    id: Int,
+    id: String,
     amount: Int = 1,
 ): Int {
     val dec = getVarbit(id) - amount
@@ -733,17 +736,15 @@ fun Player.decrementVarbit(
     return dec
 }
 
-fun Player.setVarbit(name: String, value: Int) = setVarbit(name.asRSCM(), value)
-
-
 fun Player.setVarbit(
-    id: Int,
+    id: String,
     value: Int,
 ) {
+    requireRSCM(RSCMType.VARBITTYPES, id)
     if (attr.has(CHANGE_LOGGING) && getVarbit(id) != value) {
         message("Varbit: $id was changed from: ${getVarbit(id)} to $value")
     }
-    val def = ServerCacheManager.getVarbit(id)!!
+    val def = ServerCacheManager.getVarbit(id.asRSCM())!!
     varps.setBit(def.varp, def.startBit, def.endBit, value)
 }
 
@@ -752,20 +753,22 @@ fun Player.setVarbit(
  * its varp value in [Player.varps].
  */
 fun Player.sendTempVarbit(
-    id: Int,
+    id: String,
     value: Int,
 ) {
-    val def = ServerCacheManager.getVarbit(id)!!
+    requireRSCM(RSCMType.VARBITTYPES, id)
+    val def = ServerCacheManager.getVarbit(id.asRSCM())!!
     val state = BitManipulation.setBit(varps.getState(def.varp), def.startBit, def.endBit, value)
     val message = if (state in -Byte.MAX_VALUE..Byte.MAX_VALUE) VarpSmall(def.varp, state) else VarpLarge(def.varp, state)
     write(message)
 }
 
-fun Player.toggleVarbit(id: Int) {
+fun Player.toggleVarbit(id: String) {
+    requireRSCM(RSCMType.VARBITTYPES, id)
     if (attr.has(CHANGE_LOGGING)) {
         message("Varbit toggle: $id was changed from: ${getVarbit(id)} to ${getVarbit(id) xor 1}")
     }
-    val def = ServerCacheManager.getVarbit(id)!!
+    val def = ServerCacheManager.getVarbit(id.asRSCM())!!
     varps.setBit(def.varp, def.startBit, def.endBit, getVarbit(id) xor 1)
 }
 
@@ -846,15 +849,15 @@ fun Player.heal(
 
 fun Player.getTarget(): Pawn? = attr[COMBAT_TARGET_FOCUS_ATTR]?.get()
 
-fun Player.hasSpellbook(book: Spellbook): Boolean = getVarbit(Varbit.PLAYER_SPELL_BOOK) == book.id
+fun Player.hasSpellbook(book: Spellbook): Boolean = getVarbit("varbits.spellbook") == book.id
 
-fun Player.getSpellbook(): Spellbook = Spellbook.values.first { getVarbit(Varbit.PLAYER_SPELL_BOOK) == it.id }
+fun Player.getSpellbook(): Spellbook = Spellbook.values.first { getVarbit("varbits.spellbook") == it.id }
 
-fun Player.setSpellbook(book: Spellbook) = setVarbit(Varbit.PLAYER_SPELL_BOOK, book.id)
+fun Player.setSpellbook(book: Spellbook) = setVarbit("varbits.spellbook", book.id)
 
-fun Player.getWeaponType(): Int = getVarbit(Varbit.WEAPON_TYPE_VARBIT)
+fun Player.getWeaponType(): Int = getVarbit("varbits.combat_weapon_category")
 
-fun Player.getAttackStyle(): Int = getVarp(Varp.WEAPON_ATTACK_STYLE)
+fun Player.getAttackStyle(): Int = getVarp("varp.com_mode")
 
 fun Player.hasWeaponType(
     type: WeaponType,
@@ -909,14 +912,14 @@ fun Player.hasSkullIcon(icon: SkullIcon): Boolean = skullIcon == icon.id
 fun Player.isClientResizable(): Boolean =
     interfaces.displayMode == DisplayMode.RESIZABLE_NORMAL || interfaces.displayMode == DisplayMode.RESIZABLE_LIST
 
-fun Player.inWilderness(): Boolean = getInterfaceAt(InterfaceDestination.OVERLAY) != -1
+fun Player.inWilderness(): Boolean = tile.getWildernessLevel() != 0
 
 fun Player.sendWorldMapTile() {
     runClientScript(CommonClientScripts.WORLD_MAP_TILE, tile.as30BitInteger)
 }
 
 fun Player.sendCombatLevelText() {
-    setVarbit(13027, combatLevel)
+    setVarbit("varbits.combatlevel_transmit", combatLevel)
 }
 
 fun Player.sendWeaponComponentInformation() {
@@ -938,7 +941,7 @@ fun Player.sendWeaponComponentInformation() {
     }
 
     setComponentText(593, 2, name)
-    setVarbit(357, panel)
+    setVarbit("varbits.combat_weapon_category", panel)
 }
 
 fun Player.calculateAndSetCombatLevel(): Boolean {

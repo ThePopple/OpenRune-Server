@@ -58,7 +58,7 @@ suspend fun QueueTask.options(
     fullSize: Boolean = true
 ): Int {
     player.runClientScript(CommonClientScripts.CHATBOX_RESET_BACKGROUND)
-    player.sendTempVarbit(10670, if (fullSize) 1 else 0)
+    player.sendTempVarbit("varbits.chatmodal_unclamp", if (fullSize) 1 else 0)
     player.openInterface(parent = 162, child = CHATBOX_CHILD, interfaceId = 219)
     player.runClientScript(CommonClientScripts.CHATBOX_MULTI, title, options.joinToString("|"))
     player.setInterfaceEvents(interfaceId = 219, component = 1, from = 1, to = options.size, setting = 1)
@@ -201,7 +201,7 @@ suspend fun QueueTask.searchItemWithPrevious(
     player: Player,
     message: String
 ): Int {
-    player.setVarbit(4439, 1)
+    player.setVarbit("varbits.ge_selectedslot", 1)
     player.message("All these Scripts are wrong for searchItemWithPrevious remember to set them")
     player.runClientScript(CommonClientScripts.GE_OFFER_SET_DESC, "", "", 30474256, 30474258)
     player.runClientScript(CommonClientScripts.GE_OFFER_SET_DESC, "Click the icon on the left to search for items.", "", 30474266, 30474268)
@@ -268,7 +268,7 @@ suspend fun QueueTask.chatNpc(
     player: Player,
     message: String,
     npc: Int = -1,
-    animation: Int = 588,
+    animation: String = "sequences.chatneu1",
     title: String? = null,
 ) {
     val npcId =
@@ -306,7 +306,7 @@ suspend fun QueueTask.chatNpc(
 suspend fun QueueTask.chatPlayer(
     player: Player,
     message: String,
-    animation: Int = 588,
+    animation: String = "sequences.chatneu1",
     title: String? = null,
 ) {
     val dialogTitle = title ?: player.username
@@ -440,7 +440,7 @@ suspend fun QueueTask.levelUpMessageBox(
             player.setComponentHidden(interfaceId = 233, component = value, hidden = skill != key)
         }
 
-        val skillName = Skills.getSkillName(player.world, skill)
+        val skillName = Skills.getSkillName(skill)
         val initialChar = Character.toLowerCase(skillName.toCharArray().first())
         val vowel = initialChar == 'a' || initialChar == 'e' || initialChar == 'i' || initialChar == 'o' || initialChar == 'u'
         val levelFormat = if (levelIncrement == 1) (if (vowel) "an" else "a") else "$levelIncrement"
@@ -510,12 +510,12 @@ suspend fun QueueTask.produceItemBox(
     maxProducable: Int = player.inventory.capacity,
     logic: Player.(Int, Int) -> Unit,
 ) {
-    val defs = player.world.definitions
+
     val itemDefs = items.map { getItem(it) }
 
-    val baseChild = 14
-    val itemArray = Array(10) { -1 }
-    val nameArray = Array(10) { "|" }
+    val baseChild = 15
+    val itemArray = Array(15) { -1 }
+    val nameArray = Array(15) { "|" }
 
     itemDefs.withIndex().forEach {
         val def = it.value
@@ -523,7 +523,8 @@ suspend fun QueueTask.produceItemBox(
         nameArray[it.index] = "|${def.name}"
     }
 
-    player.sendTempVarbit(5983, 1)
+    player.runClientScript(CommonClientScripts.CHATBOX_RESET_BACKGROUND)
+    player.sendTempVarbit("varbits.chatmodal_unclamp", 1)
     player.openInterface(parent = 162, child = CHATBOX_CHILD, interfaceId = 270)
     player.runClientScript(CommonClientScripts.SKILL_MULTI_SETUP, 0, "$title${nameArray.joinToString("")}", maxProducable, *itemArray)
 
@@ -532,6 +533,7 @@ suspend fun QueueTask.produceItemBox(
     terminateAction!!(this)
 
     val msg = requestReturnValue as? ResumePauseButton ?: return
+
     val child = msg.componentId
 
     if (child < baseChild || child >= baseChild + items.size) {
