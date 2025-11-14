@@ -27,6 +27,7 @@ import org.alter.game.model.attr.CURRENT_SHOP_ATTR
 import org.alter.game.model.attr.LEVEL_UP_INCREMENT
 import org.alter.game.model.attr.LEVEL_UP_OLD_XP
 import org.alter.game.model.attr.LEVEL_UP_SKILL_ID
+import org.alter.game.model.attr.LOOPING_ANIMATION_ATTR
 import org.alter.game.model.container.ItemContainer
 import org.alter.game.model.container.key.*
 import org.alter.game.model.interf.InterfaceSet
@@ -41,7 +42,9 @@ import org.alter.game.model.social.Social
 import org.alter.game.model.timer.ACTIVE_COMBAT_TIMER
 import org.alter.game.model.timer.FORCE_DISCONNECTION_TIMER
 import org.alter.game.model.varp.VarpSet
+import org.alter.game.pluginnew.event.impl.LoginEvent
 import org.alter.game.rsprot.RsModObjectProvider
+import org.alter.game.saving.PlayerDetails
 import org.alter.game.service.log.LoggerService
 import org.alter.rscm.RSCM
 import org.alter.rscm.RSCM.asRSCM
@@ -65,6 +68,13 @@ open class Player(world: World) : Pawn(world) {
      * The name that was used when the player logged into the game.
      */
     var username = ""
+
+    /**
+     * Gets the player's registration date as epoch milliseconds (Long).
+     * Returns 0L if the registration date is not set.
+     * This is stored in the accounts/ save (PlayerDetails), not in game attributes.
+     */
+    var registryDate: Long = 0L
 
     /**
      * @see Privilege
@@ -344,6 +354,15 @@ open class Player(world: World) : Pawn(world) {
             timerCycle()
         }
 
+        val loopData = attr[LOOPING_ANIMATION_ATTR]
+        if (loopData != null) {
+            loopData.currentTick += 1
+            if (loopData.currentTick >= loopData.duration) {
+                animate(loopData.animId)
+                loopData.currentTick = 0
+            }
+        }
+
         hitsCycle()
 
         for (i in 0 until varps.maxVarps) {
@@ -455,6 +474,7 @@ open class Player(world: World) : Pawn(world) {
         org.alter.game.info.PlayerInfo(this).syncAppearance()
         initiated = true
         world.plugins.executeLogin(this)
+        LoginEvent(this).post()
         social.updateStatus(this)
     }
 

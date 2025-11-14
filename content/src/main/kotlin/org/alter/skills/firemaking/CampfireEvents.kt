@@ -133,7 +133,7 @@ class CampfireEvents : PluginEvent() {
 
         world.queue {
             val graphicId = CAMPFIRE_ROTATIONS[replacement.rot].second
-            repeatUntil(delay = 3, immediate = true, predicate = { !replacement.isSpawned(world) }) {
+            repeatWhile(delay = 3, immediate = true, canRepeat = { replacement.isSpawned(world) }) {
                 world.spawn(TileGraphic(tile = replacement.tile, id = graphicId))
             }
         }
@@ -150,11 +150,16 @@ class CampfireEvents : PluginEvent() {
         player.queue {
             var logsAdded = 0
 
-            repeatUntil(delay = ticks, immediate = true, predicate = {
-                !canAddLog(player, gameObject, logData) || logsAdded >= logsToAdd
+            repeatWhile(delay = ticks, immediate = true, canRepeat = {
+                canAddLog(player, gameObject, logData) && logsAdded < logsToAdd
             }) {
                 player.animate(logData.animation)
                 val playersUsingFire = gameObject.attr[PLAYERS_COUNT_ATTR] ?: 1
+
+                val currentTime = gameObject.getTimeLeft(CAMPFIRE_TIMER)
+                val newTime = (currentTime + logData.perLogTicks).coerceAtMost(300)
+                gameObject.increaseTimer(CAMPFIRE_TIMER, newTime)
+
                 player.addXp(Skills.FIREMAKING, calculateXp(logData.xp, playersUsingFire))
                 player.inventory.remove(logData.logItem)
 
@@ -173,8 +178,6 @@ class CampfireEvents : PluginEvent() {
 
         val xpBoostMap: Map<Int, Double> = bonfire.xpBoostPlayers.mapKeys { it.key.toInt() }
             .mapValues { it.value / 100.0 }
-
-        println("PLAYERS USING FIRE: ${playersUsingFire}")
 
         val applicableBoost = xpBoostMap
             .filterKeys { it <= (playersUsingFire - 1) }

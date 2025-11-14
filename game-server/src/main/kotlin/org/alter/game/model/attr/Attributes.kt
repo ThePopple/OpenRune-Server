@@ -43,6 +43,12 @@ val NEW_ACCOUNT_ATTR = AttributeKey<Boolean>()
 val FREE_BOND_CLAIMED_ATTR = AttributeKey<String>("bond_claimed")
 
 /**
+ * Indicates the total playtime in game cycles (600ms per cycle).
+ * This is incremented every game cycle while the player is online.
+ */
+val PLAYTIME_ATTR = AttributeKey<Int>(persistenceKey = "playtime")
+
+/**
  * A flag which indicates if the player's appearance has been set by the player.
  * Opting for persistence and modifying on_login behavior this will allow OSRS-like
  * behavior such that player can logout and will still be allowed to set appearance
@@ -171,6 +177,21 @@ val INTERACTING_NPC_ATTR = AttributeKey<WeakReference<Npc>>()
  * The [Player] that was last clicked on.
  */
 val INTERACTING_PLAYER_ATTR = AttributeKey<WeakReference<Player>>()
+
+/**
+ * Data class for tracking looping animation state.
+ */
+data class LoopingAnimationData(
+    val animId: String,
+    val duration: Int, // Duration in cycles
+    var currentTick: Int = 0 // Current tick count
+)
+
+/**
+ * Indicates if a pawn is currently looping an animation.
+ * Contains the animation data needed to loop it.
+ */
+val LOOPING_ANIMATION_ATTR = AttributeKey<LoopingAnimationData>()
 
 /**
  * The slot of the interacting item in its item container.
