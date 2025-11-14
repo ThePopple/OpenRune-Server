@@ -13,6 +13,7 @@ import dev.openrune.definition.GameValGroupTypes
 import dev.openrune.filesystem.Cache
 import dev.openrune.tools.PackServerConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.alter.impl.PickpocketingTable
 import org.alter.impl.skills.Firemaking
 import org.alter.impl.misc.FoodTable
 import org.alter.impl.skills.PrayerTable
@@ -61,6 +62,7 @@ fun downloadRev(type : TaskType) {
             val tasksNew = tasks.toMutableList()
             tasksNew.add(PackDBTables(listOf(
                 PrayerTable.skillTable(),
+                PickpocketingTable.skillTable(),
                 TeleTabs.teleTabs(),
                 StatComponents.statsComponents(),
                 FoodTable.consumableFood(),
@@ -91,6 +93,7 @@ fun downloadRev(type : TaskType) {
             val tasksNew = tasks.toMutableList()
             tasksNew.add(PackDBTables(listOf(
                 PrayerTable.skillTable(),
+                PickpocketingTable.skillTable(),
                 TeleTabs.teleTabs(),
                 StatComponents.statsComponents(),
                 FoodTable.consumableFood(),
