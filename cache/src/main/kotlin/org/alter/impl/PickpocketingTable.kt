@@ -24,7 +24,7 @@ object PickpocketingTable {
         column("level", LEVEL, VarType.INT)
         column("droptable", DROPTABLE, VarType.DBROW)
         column("category", CATEGORY, VarType.INT)
-        column("npcs", NPCS, VarType.NPC)
+        column("npcs", NPCS, VarType.INT)
         column("stun_damage_min", STUN_DAMAGE_MIN, VarType.INT)
         column("stun_damage_max", STUN_DAMAGE_MAX, VarType.INT)
         column("stun_duration", STUN_DURATION, VarType.INT)
