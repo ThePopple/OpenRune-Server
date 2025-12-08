@@ -25,6 +25,7 @@ tasks.withType<KotlinCompile> {
 
 ksp {
     arg("moduleDir", projectDir.absolutePath)
+    arg("rootDir", rootDir.absolutePath + "/")
 }
 
 tasks.named<Jar>("jar") {

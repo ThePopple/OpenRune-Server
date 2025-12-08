@@ -84,7 +84,7 @@ class BirdNestPlugin : PluginEvent() {
 
     override fun init() {
         on<TreeLogObtainedEvent> {
-            where { treeType != "dbrows.woodcutting_blisterwood_tree".asRSCM() }
+            where { treeData.logItem != "items.blisterwood_logs".asRSCM() }
             then { rollBirdNest(player, clueBaseChance) }
         }
 

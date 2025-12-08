@@ -5,7 +5,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.alter.game.model.container.key.ContainerKey
 import org.alter.game.model.item.Item
 import org.alter.game.model.item.SlotItem
+import org.alter.rscm.RSCM
+import org.alter.rscm.RSCM.asRSCM
 import org.alter.rscm.RSCM.getRSCM
+import org.alter.rscm.RSCMType
 
 /**
  * An [ItemContainer] represents a collection of ordered [Item]s.
@@ -54,6 +57,11 @@ class ItemContainer(val key: ContainerKey) : Iterable<Item?> {
 
     fun contains(vararg itemIds: String): Boolean =
         itemIds.all { id -> items.any { it?.id == getRSCM(id) } }
+
+    fun contains(vararg itemIds: Item): Boolean {
+        return itemIds.all { getItemCount(it.id) >= it.amount }
+    }
+
     /**
      * Checks if the container has an [Item] which has the same [Item.id] as
      * [item] or any of the values (if any) in [others].
@@ -160,6 +168,12 @@ class ItemContainer(val key: ContainerKey) : Iterable<Item?> {
      * Calculate the total amount of items in this container who's [Item.id]
      * matches [itemId].
      */
+
+    fun getItemCount(itemId: String): Int {
+        RSCM.requireRSCM(RSCMType.OBJTYPES, itemId)
+        return getItemCount(itemId.asRSCM())
+    }
+
     fun getItemCount(itemId: Int): Int {
         var amount: Long = 0
 
