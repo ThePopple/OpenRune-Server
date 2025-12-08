@@ -31,7 +31,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-fun getCacheLocation() = File("../data/", "cache").path
+fun getCacheLocation(): String = File("../data/", "cache").path
 fun getRawCacheLocation(dir: String) = File("../data/", "raw-cache/$dir/")
 
 fun tablesToPack() = listOf(

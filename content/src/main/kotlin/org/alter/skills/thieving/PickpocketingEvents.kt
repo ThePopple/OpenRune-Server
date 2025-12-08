@@ -8,6 +8,7 @@ import org.alter.game.model.entity.Npc
 import org.alter.game.model.entity.Player
 import org.alter.game.pluginnew.PluginEvent
 import org.alter.game.pluginnew.event.impl.NpcClickEvent
+import org.alter.impl.skills.Pickpocketing
 
 class PickpocketingEvents : PluginEvent() {
 

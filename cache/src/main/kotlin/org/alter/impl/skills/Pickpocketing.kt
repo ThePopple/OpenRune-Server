@@ -1,4 +1,4 @@
-package org.alter.skills.thieving
+package org.alter.impl.skills
 
 import org.alter.game.util.DbHelper.Companion.table
 import org.alter.game.util.column
