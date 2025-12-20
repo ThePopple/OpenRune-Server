@@ -42,4 +42,8 @@ object Pickpocketing {
 
         return definitions.firstOrNull { it.category == category }
     }
+
+    fun byNpcId(npcId: Int): PickpocketNPCData? {
+        return definitions.firstOrNull { it.npcs.contains(npcId) }
+    }
 }

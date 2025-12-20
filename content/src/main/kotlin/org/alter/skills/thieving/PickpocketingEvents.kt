@@ -3,7 +3,9 @@ package org.alter.skills.thieving
 import dev.openrune.ServerCacheManager
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.alter.api.Skills
+import org.alter.api.ext.hit
 import org.alter.api.ext.message
+import org.alter.api.success
 import org.alter.game.model.entity.Npc
 import org.alter.game.model.entity.Player
 import org.alter.game.pluginnew.PluginEvent
@@ -29,16 +31,27 @@ class PickpocketingEvents : PluginEvent() {
                 on<NpcClickEvent> {
                     where { npc.id == npcDef.id && optionName.equals("pickpocket", ignoreCase = true) }
                     then {
-                        val error = canPickpocket(player, npc, data)
-                        if (error != null) {
-                            player.message(error)
-                            return@then
+                        player.queue {
+                            pickpocketNpc(player, npc, data)
                         }
-
-                        pickpocketNpc(player, npc, data)
                     }
                 }
             } else {
+                val data = Pickpocketing.byNpcId(npcDef.id)
+                if (data == null) {
+                    logger.warn { "No pickpocketing data found for NPC id:name - ${npcDef.name}:${npcDef.id}" }
+                    return@forEach
+                }
+
+                on<NpcClickEvent> {
+                    where { npc.id == npcDef.id && optionName.equals("pickpocket", ignoreCase = true) }
+                    then {
+                        player.queue {
+                            pickpocketNpc(player, npc, data)
+                        }
+                    }
+                }
+
                 // TODO: Implement NPC id list handling for pickpocketing when no category is defined
             }
 
@@ -74,6 +87,27 @@ class PickpocketingEvents : PluginEvent() {
     }
 
     private fun pickpocketNpc(player: Player, npc: Npc, data: Pickpocketing.PickpocketNPCData) {
-        player.message("You pick the ${npc.def.name}'s pocket.")
+        val error = canPickpocket(player, npc, data)
+        if (error != null) {
+            player.message(error)
+            return
+        }
+
+        val lvl = player.getSkills().getCurrentLevel(Skills.THIEVING)
+        val success = success(data.lowChance, data.highChance, lvl)
+
+        player.message("You attempt to pick the ${npc.def.name}'s pocket.")
+        player.animate("sequences.human_pickpocket")
+
+        if (success) {
+            player.addXp(Skills.THIEVING, data.exp)
+            player.message("You successfully pick the ${npc.def.name}'s pocket.")
+        } else {
+            player.message("You fail to pick the ${npc.def.name}'s pocket.")
+            npc.animate("sequences.human_unarmedpunch")
+            player.hit((data.stunDamageMin..data.stunDamageMax).random())
+            player.animate("sequences.stunned")
+            // TODO: Implement stun time lock
+        }
     }
 }
