@@ -1,27 +1,20 @@
-package org.alter.impl.skills
+package org.alter.impl.skills.thieving
 
 import dev.openrune.definition.dbtables.DBTable
 import dev.openrune.definition.dbtables.dbTable
-import dev.openrune.definition.type.DBRowType
-import dev.openrune.definition.type.DBTableType
 import dev.openrune.definition.util.VarType
-import org.alter.game.util.DbHelper.Companion.table
-import org.alter.game.util.column
-import org.alter.game.util.columnOptional
-import org.alter.game.util.multiColumnOptional
-import org.alter.game.util.vars.IntType
-import org.alter.impl.*
 
 const val XP = 0
 const val LEVEL = 1
 const val DROPTABLE = 2
-const val CATEGORY = 3
-const val NPCS = 4
-const val STUN_DAMAGE_MIN = 5
-const val STUN_DAMAGE_MAX = 6
-const val STUN_DURATION = 7
-const val LOW_CHANCE = 8
-const val HIGH_CHANCE = 9
+const val COIN_POUCH = 3
+const val CATEGORY = 4
+const val NPCS = 5
+const val STUN_DAMAGE_MIN = 6
+const val STUN_DAMAGE_MAX = 7
+const val STUN_DURATION = 8
+const val LOW_CHANCE = 9
+const val HIGH_CHANCE = 10
 
 const val ITEM = 0
 const val MIN_AMOUNT = 1
@@ -39,56 +32,18 @@ object Pickpocketing {
     // TODO: Implement Varlamore House shit
     // TODO: Implement blackjacking & relevant npcs etc
 
-//    data class PickpocketNPCData(
-//        val exp: Int,
-//        val level: Int,
-////        val DROPTABLE: DBRowType,
-//        val category: Int,
-//        val npcs: List<Int?>,
-//        val stunDamageMin: Int,
-//        val stunDamageMax: Int,
-//        val stunDuration: Int,
-//        val lowChance: Int,
-//        val highChance: Int
-//    )
-
-    data class Drop(
+    data class WeightedItem(
         val item: String,
         val minAmount: Int,
         val maxAmount: Int,
-        val weight: Int
+        val weight: Int,
     )
-//
-//    val definitions: List<PickpocketNPCData> = table("tables.skill_thieving_pickpocketing").map { row ->
-//        val xp = row.column("columns.skill_thieving_pickpocketing:xp", IntType)
-//        val level = row.column("columns.skill_thieving_pickpocketing:level", IntType)
-//        val droptable = row.column("columns.skill_thieving_pickpocketing:droptable", DBTableType)
-//        val category = row.columnOptional("columns.skill_thieving_pickpocketing:category", IntType) ?: -1
-//        val npcs = row.multiColumnOptional("columns.skill_thieving_pickpocketing:npcs", IntType)
-//        val stunDamageMin = row.column("columns.skill_thieving_pickpocketing:stun_damage_min", IntType)
-//        val stunDamageMax = row.column("columns.skill_thieving_pickpocketing:stun_damage_max", IntType)
-//        val stunDuration = row.column("columns.skill_thieving_pickpocketing:stun_duration", IntType)
-//        val lowChance = row.column("columns.skill_thieving_pickpocketing:low_chance", IntType)
-//        val highChance = row.column("columns.skill_thieving_pickpocketing:high_chance", IntType)
-//
-//
-//        PickpocketNPCData(xp, level, category, npcs, stunDamageMin, stunDamageMax, stunDuration, lowChance, highChance)
-//    }
-
-//    fun byCategory(category: Int): PickpocketNPCData? {
-//        if (category == -1) return null
-//
-//        return definitions.firstOrNull { it.category == category }
-//    }
-//
-//    fun byNpcId(npcId: Int): PickpocketNPCData? {
-//        return definitions.firstOrNull { it.npcs.contains(npcId) }
-//    }
 
     fun npcs() = dbTable("tables.skill_thieving_pickpocketing") {
         column("xp", XP, VarType.INT)
         column("level", LEVEL, VarType.INT)
         column("droptable", DROPTABLE, VarType.DBTABLE)
+        column("coin_pouch", COIN_POUCH, VarType.OBJ)
         column("category", CATEGORY, VarType.INT)
         column("npcs", NPCS, VarType.INT)
         column("stun_damage_min", STUN_DAMAGE_MIN, VarType.INT)
@@ -101,6 +56,7 @@ object Pickpocketing {
             column(XP, 8)
             column(LEVEL, 1)
             columnRSCM(DROPTABLE, "tables.man_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_citizen")
             column(CATEGORY, 266)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 1)
@@ -113,6 +69,7 @@ object Pickpocketing {
             column(XP, 8)
             column(LEVEL, 1)
             columnRSCM(DROPTABLE, "tables.man_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_citizen")
             column(CATEGORY, 492)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 1)
@@ -126,6 +83,7 @@ object Pickpocketing {
             column(XP, 14)
             column(LEVEL, 10)
             columnRSCM(DROPTABLE, "tables.farmer_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_farmer")
             column(CATEGORY, 498)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
@@ -139,6 +97,7 @@ object Pickpocketing {
             column(XP, 22)
             column(LEVEL, 15)
             columnRSCM(DROPTABLE, "tables.ham_member_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_ham")
             columnRSCM(NPCS, "npcs.favour_male_ham_civilian")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 3)
@@ -152,6 +111,7 @@ object Pickpocketing {
             column(XP, 22)
             column(LEVEL, 20)
             columnRSCM(DROPTABLE, "tables.ham_member_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_ham")
             columnRSCM(NPCS, "npcs.favour_female_ham_civilian")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 3)
@@ -164,6 +124,7 @@ object Pickpocketing {
             column(XP, 26)
             column(LEVEL, 25)
             columnRSCM(DROPTABLE, "tables.warrior_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_warrior")
             column(CATEGORY, 1728)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
@@ -176,9 +137,8 @@ object Pickpocketing {
             column(XP, 26)
             column(LEVEL, 25)
             columnRSCM(DROPTABLE, "tables.warrior_pickpocketing_droptable")
-            columnRSCM(
-                NPCS, "npcs.al_kharid_warrior"
-            )
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_warrior")
+            columnRSCM(NPCS, "npcs.al_kharid_warrior")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
             column(STUN_DURATION, 7)
@@ -203,6 +163,7 @@ object Pickpocketing {
             column(XP, 36)
             column(LEVEL, 32)
             columnRSCM(DROPTABLE, "tables.rogue_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_rogue")
             columnRSCM(NPCS, "npcs.rogue", "npcs.wilderness_rogue")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
@@ -215,6 +176,7 @@ object Pickpocketing {
             column(XP, 40)
             column(LEVEL, 36)
             columnRSCM(DROPTABLE, "tables.cave_goblin_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_cavegoblin")
             column(CATEGORY, 373)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 1)
@@ -241,6 +203,7 @@ object Pickpocketing {
             column(XP, 46)
             column(LEVEL, 40)
             columnRSCM(DROPTABLE, "tables.guard_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_guard")
             column(CATEGORY, 470)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
@@ -254,6 +217,7 @@ object Pickpocketing {
             column(XP, 65)
             column(LEVEL, 70)
             columnRSCM(DROPTABLE, "tables.fremennik_citizen_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_fremennik")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
             column(STUN_DURATION, 9)
@@ -265,6 +229,7 @@ object Pickpocketing {
             column(XP, 79)
             column(LEVEL, 70)
             columnRSCM(DROPTABLE, "tables.desert_bandit_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_bandit")
             columnRSCM(NPCS, "npcs.fourdiamonds_sword_bandit_1", "npcs.fourdiamonds_sword_bandit_free")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
@@ -277,6 +242,7 @@ object Pickpocketing {
             column(XP, 84)
             column(LEVEL, 55)
             columnRSCM(DROPTABLE, "tables.knight_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_knight")
             column(CATEGORY, 1731)
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 4)
@@ -291,6 +257,7 @@ object Pickpocketing {
             column(LEVEL, 55)
             column(CATEGORY, 1977)
             columnRSCM(DROPTABLE, "tables.knight_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_knight")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 4)
             column(STUN_DURATION, 9)
@@ -303,6 +270,7 @@ object Pickpocketing {
             column(LEVEL, 70)
             columnRSCM(DROPTABLE, "tables.watchman_pickpocketing_droptable")
             columnRSCM(NPCS, "npcs.yanille_watchman")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_watchman")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
             column(STUN_DURATION, 9)
@@ -314,6 +282,7 @@ object Pickpocketing {
             column(XP, 131)
             column(LEVEL, 70)
             columnRSCM(DROPTABLE, "tables.paladin_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_paladin")
             column(CATEGORY, 1729)
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
@@ -326,6 +295,7 @@ object Pickpocketing {
             column(XP, 133)
             column(LEVEL, 80)
             columnRSCM(DROPTABLE, "tables.gnome_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_gnome")
             column(CATEGORY, 354)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
@@ -338,6 +308,7 @@ object Pickpocketing {
             column(XP, 163)
             column(LEVEL, 80)
             columnRSCM(DROPTABLE, "tables.hero_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_hero")
             column(CATEGORY, 1730)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
@@ -350,6 +321,7 @@ object Pickpocketing {
             column(XP, 306)
             column(LEVEL, 80)
             columnRSCM(DROPTABLE, "tables.vyre_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_vyre")
             column(CATEGORY, 1451)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
@@ -362,6 +334,7 @@ object Pickpocketing {
             column(XP, 353)
             column(LEVEL, 80)
             columnRSCM(DROPTABLE, "tables.elf_pickpocketing_droptable")
+            // columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_elf")
             column(CATEGORY, 1392)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
@@ -385,189 +358,187 @@ object Pickpocketing {
 
     }
 
-    val manDropTable = createDropTable("tables.man_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_citizen", 1, 1, ALWAYS),
-    ))
+    val manDropTable = createDropTable("tables.man_pickpocketing_droptable", listOf())
 
-    val farmerDropTable = createDropTable("tables.farmer_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_farmer", 1, 1, ALWAYS),
-        Drop("items.potato_seed", 1, 1, RARE),
-    ))
+    val farmerDropTable = createDropTable(
+        "tables.farmer_pickpocketing_droptable", listOf(
+            WeightedItem("items.potato_seed", 1, 1, RARE),
+        )
+    )
 
-    val hamMemberDropTable = createDropTable("tables.ham_member_pickpocketing_droptable", listOf(
-        Drop("items.bronze_arrow", 1, 15, COMMON),
-        Drop("items.bronze_axe", 1, 1, COMMON),
-        Drop("items.bronze_pickaxe", 1, 1, COMMON),
-        Drop("items.iron_axe", 1, 1, COMMON),
-        Drop("items.iron_dagger", 1, 1, COMMON),
-        Drop("items.iron_pickaxe", 1, 1, COMMON),
-        Drop("items.digsitebuttons", 1, 1, COMMON),
-        Drop("items.pickpocket_coin_pouch_ham", 1, 1, COMMON),
-        Drop("items.feather", 1, 7, COMMON),
-        Drop("items.knife", 1, 1, COMMON),
-        Drop("items.logs", 1, 1, COMMON),
-        Drop("items.needle", 1, 1, COMMON),
-        Drop("items.raw_anchovies", 1, 3, COMMON),
-        Drop("items.raw_chicken", 1, 1, COMMON),
-        Drop("items.thread", 2, 10, COMMON),
-        Drop("items.tinderbox", 1, 1, COMMON),
-        Drop("items.uncut_opal", 1, 1, COMMON),
-        Drop("items.leather_armour", 1, 1, UNCOMMON),
-        Drop("items.ham_boots", 1, 1, UNCOMMON),
-        Drop("items.ham_cloak", 1, 1, UNCOMMON),
-        Drop("items.ham_gloves", 1, 1, UNCOMMON),
-        Drop("items.ham_hood", 1, 1, UNCOMMON),
-        Drop("items.ham_badge", 1, 1, UNCOMMON),
-        Drop("items.ham_shirt", 1, 1, UNCOMMON),
-        Drop("items.steel_arrow", 1, 13, UNCOMMON),
-        Drop("items.steel_axe", 1, 1, UNCOMMON),
-        Drop("items.steel_dagger", 1, 1, UNCOMMON),
-        Drop("items.steel_pickaxe", 1, 1, UNCOMMON),
-        Drop("items.trail_clue_easy_simple001", 1, 1, UNCOMMON),
-        Drop("items.coal", 1, 1, UNCOMMON),
-        Drop("items.cow_hide", 1, 1, UNCOMMON),
-        Drop("items.digsitearmour1", 1, 1, UNCOMMON),
-        Drop("items.unidentified_guam", 1, 1, UNCOMMON),
-        Drop("items.unidentified_marentill", 1, 1, UNCOMMON),
-        Drop("items.unidentified_tarromin", 1, 1, UNCOMMON),
-        Drop("items.iron_ore", 1, 1, UNCOMMON),
-        Drop("items.digsitesword", 1, 1, UNCOMMON),
-        Drop("items.uncut_jade", 1, 1, UNCOMMON),
-    ))
+    val hamMemberDropTable = createDropTable(
+        "tables.ham_member_pickpocketing_droptable", listOf(
+            WeightedItem("items.bronze_arrow", 1, 15, COMMON),
+            WeightedItem("items.bronze_axe", 1, 1, COMMON),
+            WeightedItem("items.bronze_pickaxe", 1, 1, COMMON),
+            WeightedItem("items.iron_axe", 1, 1, COMMON),
+            WeightedItem("items.iron_dagger", 1, 1, COMMON),
+            WeightedItem("items.iron_pickaxe", 1, 1, COMMON),
+            WeightedItem("items.digsitebuttons", 1, 1, COMMON),
+            WeightedItem("items.feather", 1, 7, COMMON),
+            WeightedItem("items.knife", 1, 1, COMMON),
+            WeightedItem("items.logs", 1, 1, COMMON),
+            WeightedItem("items.needle", 1, 1, COMMON),
+            WeightedItem("items.raw_anchovies", 1, 3, COMMON),
+            WeightedItem("items.raw_chicken", 1, 1, COMMON),
+            WeightedItem("items.thread", 2, 10, COMMON),
+            WeightedItem("items.tinderbox", 1, 1, COMMON),
+            WeightedItem("items.uncut_opal", 1, 1, COMMON),
+            WeightedItem("items.leather_armour", 1, 1, UNCOMMON),
+            WeightedItem("items.ham_boots", 1, 1, UNCOMMON),
+            WeightedItem("items.ham_cloak", 1, 1, UNCOMMON),
+            WeightedItem("items.ham_gloves", 1, 1, UNCOMMON),
+            WeightedItem("items.ham_hood", 1, 1, UNCOMMON),
+            WeightedItem("items.ham_badge", 1, 1, UNCOMMON),
+            WeightedItem("items.ham_shirt", 1, 1, UNCOMMON),
+            WeightedItem("items.steel_arrow", 1, 13, UNCOMMON),
+            WeightedItem("items.steel_axe", 1, 1, UNCOMMON),
+            WeightedItem("items.steel_dagger", 1, 1, UNCOMMON),
+            WeightedItem("items.steel_pickaxe", 1, 1, UNCOMMON),
+            WeightedItem("items.trail_clue_easy_simple001", 1, 1, UNCOMMON),
+            WeightedItem("items.coal", 1, 1, UNCOMMON),
+            WeightedItem("items.cow_hide", 1, 1, UNCOMMON),
+            WeightedItem("items.digsitearmour1", 1, 1, UNCOMMON),
+            WeightedItem("items.unidentified_guam", 1, 1, UNCOMMON),
+            WeightedItem("items.unidentified_marentill", 1, 1, UNCOMMON),
+            WeightedItem("items.unidentified_tarromin", 1, 1, UNCOMMON),
+            WeightedItem("items.iron_ore", 1, 1, UNCOMMON),
+            WeightedItem("items.digsitesword", 1, 1, UNCOMMON),
+            WeightedItem("items.uncut_jade", 1, 1, UNCOMMON),
+        )
+    )
 
-    val warriorDropTable = createDropTable("tables.warrior_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_warrior", 1, 1, ALWAYS),
-    ))
+    val warriorDropTable = createDropTable(
+        "tables.warrior_pickpocketing_droptable", listOf()
+    )
 
-    val villagerDropTable = createDropTable("tables.villager_pickpocketing_droptable", listOf(
-        Drop("items.coins", 5, 5, ALWAYS),
-    ))
+    val villagerDropTable = createDropTable(
+        "tables.villager_pickpocketing_droptable", listOf(
+            WeightedItem("items.coins", 5, 5, ALWAYS),
+        )
+    )
 
-    val rogueDropTable = createDropTable("tables.rogue_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_rogue", 1, 1, ALWAYS),
-        Drop("items.ring_of_dueling_1", 1, 1, RARE),
-        Drop("items.ring_of_dueling_2", 1, 1, RARE),
-        Drop("items.ring_of_dueling_3", 1, 1, RARE),
-        Drop("items.ring_of_dueling_4", 1, 1, RARE),
-        Drop("items.trail_clue_easy_simple001", 1, 1, VERY_RARE),
-    ))
+    val rogueDropTable = createDropTable(
+        "tables.rogue_pickpocketing_droptable", listOf(
+            WeightedItem("items.ring_of_dueling_1", 1, 1, RARE),
+            WeightedItem("items.ring_of_dueling_2", 1, 1, RARE),
+            WeightedItem("items.ring_of_dueling_3", 1, 1, RARE),
+            WeightedItem("items.ring_of_dueling_4", 1, 1, RARE),
+            WeightedItem("items.trail_clue_easy_simple001", 1, 1, VERY_RARE),
+        )
+    )
 
-    val caveGoblinDropTable = createDropTable("tables.cave_goblin_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_cavegoblin", 25, 120, ALWAYS),
-        Drop("items.airrune", 8, 8, COMMON),
-        Drop("items.lockpick", 1, 1, VERY_RARE),
-        Drop("items.jug_wine", 1, 1, UNCOMMON),
-        Drop("items.gold_bar", 1, 1, RARE),
-        Drop("items.iron_dagger_p", 1, 1, RARE),
-    ))
+    val caveGoblinDropTable = createDropTable(
+        "tables.cave_goblin_pickpocketing_droptable", listOf(
+            WeightedItem("items.airrune", 8, 8, COMMON),
+            WeightedItem("items.lockpick", 1, 1, VERY_RARE),
+            WeightedItem("items.jug_wine", 1, 1, UNCOMMON),
+            WeightedItem("items.gold_bar", 1, 1, RARE),
+            WeightedItem("items.iron_dagger_p", 1, 1, RARE),
+        )
+    )
 
-    val masterFarmerDropTable = createDropTable("tables.master_farmer_pickpocketing_droptable", listOf(
-        Drop("items.potato_seed", 1, 4, COMMON),
-        Drop("items.onion_seed", 1, 3, COMMON),
-        Drop("items.cabbage_seed", 1, 3, COMMON),
-        Drop("items.tomato_seed", 1, 2, COMMON),
-        Drop("items.sweetcorn_seed", 1, 2, UNCOMMON),
-        Drop("items.strawberry_seed", 1, 1, UNCOMMON),
-        Drop("items.watermelon_seed", 1, 1, RARE),
-        Drop("items.barley_seed", 1, 4, COMMON),
-        Drop("items.hammerstone_hop_seed", 1, 3, COMMON),
-        Drop("items.asgarnian_hop_seed", 1, 2, COMMON),
-        Drop("items.jute_seed", 1, 3, COMMON),
-        Drop("items.yanillian_hop_seed", 1, 2, UNCOMMON),
-        Drop("items.krandorian_hop_seed", 1, 1, UNCOMMON),
-        Drop("items.wildblood_hop_seed", 1, 1, RARE),
-        Drop("items.marigold_seed", 1, 1, COMMON),
-        Drop("items.nasturtium_seed", 1, 1, UNCOMMON),
-        Drop("items.rosemary_seed", 1, 1, UNCOMMON),
-        Drop("items.woad_seed", 1, 1, UNCOMMON),
-        Drop("items.limpwurt_seed", 1, 1, UNCOMMON),
-        Drop("items.redberry_bush_seed", 1, 1, COMMON),
-        Drop("items.cadavaberry_bush_seed", 1, 1, UNCOMMON),
-        Drop("items.dwellberry_bush_seed", 1, 1, UNCOMMON),
-        Drop("items.jangerberry_bush_seed", 1, 1, RARE),
-        Drop("items.whiteberry_bush_seed", 1, 1, RARE),
-        Drop("items.poisonivy_bush_seed", 1, 1, RARE),
-        Drop("items.guam_seed", 1, 1, UNCOMMON),
-        Drop("items.marrentill_seed", 1, 1, UNCOMMON),
-        Drop("items.tarromin_seed", 1, 1, RARE),
-        Drop("items.harralander_seed", 1, 1, RARE),
-        Drop("items.ranarr_seed", 1, 1, RARE),
-        Drop("items.toadflax_seed", 1, 1, RARE),
-        Drop("items.irit_seed", 1, 1, RARE),
-        Drop("items.avantoe_seed", 1, 1, RARE),
-        Drop("items.kwuarm_seed", 1, 1, VERY_RARE),
-        Drop("items.snapdragon_seed", 1, 1, VERY_RARE),
-        Drop("items.cadantine_seed", 1, 1, VERY_RARE),
-        Drop("items.lantadyme_seed", 1, 1, VERY_RARE),
-        Drop("items.dwarf_weed_seed", 1, 1, VERY_RARE),
-        Drop("items.torstol_seed", 1, 1, VERY_RARE),
-        Drop("items.mushroom_spore_2", 1, 1, RARE), // Unsure if this is the right spore
-        Drop("items.belladonna_seed", 1, 1, RARE),
-        Drop("items.cactus_seed", 1, 1, VERY_RARE),
-    ))
+    val masterFarmerDropTable = createDropTable(
+        "tables.master_farmer_pickpocketing_droptable", listOf(
+            WeightedItem("items.potato_seed", 1, 4, COMMON),
+            WeightedItem("items.onion_seed", 1, 3, COMMON),
+            WeightedItem("items.cabbage_seed", 1, 3, COMMON),
+            WeightedItem("items.tomato_seed", 1, 2, COMMON),
+            WeightedItem("items.sweetcorn_seed", 1, 2, UNCOMMON),
+            WeightedItem("items.strawberry_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.watermelon_seed", 1, 1, RARE),
+            WeightedItem("items.barley_seed", 1, 4, COMMON),
+            WeightedItem("items.hammerstone_hop_seed", 1, 3, COMMON),
+            WeightedItem("items.asgarnian_hop_seed", 1, 2, COMMON),
+            WeightedItem("items.jute_seed", 1, 3, COMMON),
+            WeightedItem("items.yanillian_hop_seed", 1, 2, UNCOMMON),
+            WeightedItem("items.krandorian_hop_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.wildblood_hop_seed", 1, 1, RARE),
+            WeightedItem("items.marigold_seed", 1, 1, COMMON),
+            WeightedItem("items.nasturtium_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.rosemary_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.woad_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.limpwurt_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.redberry_bush_seed", 1, 1, COMMON),
+            WeightedItem("items.cadavaberry_bush_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.dwellberry_bush_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.jangerberry_bush_seed", 1, 1, RARE),
+            WeightedItem("items.whiteberry_bush_seed", 1, 1, RARE),
+            WeightedItem("items.poisonivy_bush_seed", 1, 1, RARE),
+            WeightedItem("items.guam_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.marrentill_seed", 1, 1, UNCOMMON),
+            WeightedItem("items.tarromin_seed", 1, 1, RARE),
+            WeightedItem("items.harralander_seed", 1, 1, RARE),
+            WeightedItem("items.ranarr_seed", 1, 1, RARE),
+            WeightedItem("items.toadflax_seed", 1, 1, RARE),
+            WeightedItem("items.irit_seed", 1, 1, RARE),
+            WeightedItem("items.avantoe_seed", 1, 1, RARE),
+            WeightedItem("items.kwuarm_seed", 1, 1, VERY_RARE),
+            WeightedItem("items.snapdragon_seed", 1, 1, VERY_RARE),
+            WeightedItem("items.cadantine_seed", 1, 1, VERY_RARE),
+            WeightedItem("items.lantadyme_seed", 1, 1, VERY_RARE),
+            WeightedItem("items.dwarf_weed_seed", 1, 1, VERY_RARE),
+            WeightedItem("items.torstol_seed", 1, 1, VERY_RARE),
+            WeightedItem("items.mushroom_spore_2", 1, 1, RARE), // Unsure if this is the right spore
+            WeightedItem("items.belladonna_seed", 1, 1, RARE),
+            WeightedItem("items.cactus_seed", 1, 1, VERY_RARE),
+        )
+    )
 
 
-    val guardDropTable = createDropTable("tables.guard_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_guard", 1, 1, ALWAYS),
-    ))
+    val guardDropTable = createDropTable("tables.guard_pickpocketing_droptable", listOf())
 
-    val fremennikCitizenDropTable = createDropTable("tables.fremennik_citizen_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_fremennik", 1, 1, ALWAYS),
-    ))
+    val fremennikCitizenDropTable = createDropTable("tables.fremennik_citizen_pickpocketing_droptable", listOf())
 
-    val desertBanditDropTable = createDropTable("tables.desert_bandit_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_desertbandit", 1, 1, ALWAYS),
-    ))
+    val desertBanditDropTable = createDropTable("tables.desert_bandit_pickpocketing_droptable", listOf())
 
-    val knightOfArdougneDropTable = createDropTable("tables.knight_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_knight", 1, 1, ALWAYS),
-    ))
+    val knightOfArdougneDropTable = createDropTable("tables.knight_pickpocketing_droptable", listOf())
 
-    val yanilleWatchmanDropTable = createDropTable("tables.watchman_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_watchman", 1, 1, ALWAYS),
-    ))
+    val yanilleWatchmanDropTable = createDropTable("tables.watchman_pickpocketing_droptable", listOf())
 
-    val paladinDropTable = createDropTable("tables.paladin_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_paladin", 1, 1, ALWAYS),
-        Drop("items.chaosrune", 2, 2, COMMON),
-    ))
+    val paladinDropTable = createDropTable(
+        "tables.paladin_pickpocketing_droptable", listOf(
+            WeightedItem("items.chaosrune", 2, 2, COMMON),
+        )
+    )
 
-    val gnomeDropTable = createDropTable("tables.gnome_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_gnome", 300, 300, COMMON),
-        Drop("items.earthrune", 1, 1, COMMON),
-        Drop("items.gold_ore", 1, 1, COMMON),
-        Drop("items.fire_orb", 1, 1, COMMON),
-        Drop("items.swamp_toad", 1, 1, COMMON),
-        Drop("items.king_worm", 1, 1, COMMON),
-    ))
+    val gnomeDropTable = createDropTable(
+        "tables.gnome_pickpocketing_droptable", listOf(
+            WeightedItem("items.earthrune", 1, 1, COMMON),
+            WeightedItem("items.gold_ore", 1, 1, COMMON),
+            WeightedItem("items.fire_orb", 1, 1, COMMON),
+            WeightedItem("items.swamp_toad", 1, 1, COMMON),
+            WeightedItem("items.king_worm", 1, 1, COMMON),
+            WeightedItem("items.arrow_shaft", 1, 1, COMMON),
+        )
+    )
 
-    val heroDropTable = createDropTable("tables.hero_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_hero", 200, 300, COMMON),
-        Drop("items.deathrune", 2, 2, UNCOMMON),
-        Drop("items.bloodrune", 1, 1, UNCOMMON),
-        Drop("items.gold_ore", 1, 1, UNCOMMON),
-        Drop("items.jug_wine", 1, 1, UNCOMMON),
-        Drop("items.fire_orb", 1, 1, UNCOMMON),
-        Drop("items.diamond", 1, 1, UNCOMMON),
-    ))
+    val heroDropTable = createDropTable(
+        "tables.hero_pickpocketing_droptable", listOf(
+            WeightedItem("items.deathrune", 2, 2, UNCOMMON),
+            WeightedItem("items.bloodrune", 1, 1, UNCOMMON),
+            WeightedItem("items.gold_ore", 1, 1, UNCOMMON),
+            WeightedItem("items.jug_wine", 1, 1, UNCOMMON),
+            WeightedItem("items.fire_orb", 1, 1, UNCOMMON),
+            WeightedItem("items.diamond", 1, 1, UNCOMMON),
+        )
+    )
 
-    val vyreDropTable = createDropTable("tables.vyre_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_vyre", 1, 1, ALWAYS),
-    ))
+    val vyreDropTable = createDropTable("tables.vyre_pickpocketing_droptable", listOf())
 
-    val elfDropTable = createDropTable("tables.elf_pickpocketing_droptable", listOf(
-        Drop("items.pickpocket_coin_pouch_elf", 1, 1, ALWAYS),
-    ))
+    val elfDropTable = createDropTable("tables.elf_pickpocketing_droptable", listOf())
 
-    val tzhaarDropTable = createDropTable("tables.tzhaar_pickpocketing_droptable", listOf(
-        Drop("items.tzhaar_token", 1, 16, COMMON),
-        Drop("items.uncut_sapphire", 1, 1, COMMON),
-        Drop("items.uncut_emerald", 1, 1, COMMON),
-        Drop("items.uncut_ruby", 1, 1, COMMON),
-        Drop("items.uncut_diamond", 1, 1, COMMON),
-    ))
+    val tzhaarDropTable = createDropTable(
+        "tables.tzhaar_pickpocketing_droptable", listOf(
+            WeightedItem("items.tzhaar_token", 1, 16, COMMON),
+            WeightedItem("items.uncut_sapphire", 1, 1, COMMON),
+            WeightedItem("items.uncut_emerald", 1, 1, COMMON),
+            WeightedItem("items.uncut_ruby", 1, 1, COMMON),
+            WeightedItem("items.uncut_diamond", 1, 1, COMMON),
+        )
+    )
 
-    private fun createDropTable(tableId: String, drops: List<Drop>): DBTable {
+    private fun createDropTable(tableId: String, drops: List<WeightedItem>): DBTable {
         return dbTable(tableId) {
             column("item", ITEM, VarType.OBJ)
             column("min_amount", MIN_AMOUNT, VarType.INT)

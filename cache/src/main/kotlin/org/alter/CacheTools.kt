@@ -25,6 +25,7 @@ import org.alter.impl.skills.runecrafting.Alters
 import org.alter.impl.skills.runecrafting.CombinationRune
 import org.alter.impl.skills.runecrafting.RunecraftRune
 import org.alter.impl.skills.runecrafting.Tiara
+import org.alter.impl.skills.thieving.Pickpocketing
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption

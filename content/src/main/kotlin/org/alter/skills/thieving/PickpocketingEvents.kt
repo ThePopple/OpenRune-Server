@@ -10,7 +10,6 @@ import org.alter.game.model.entity.Npc
 import org.alter.game.model.entity.Player
 import org.alter.game.pluginnew.PluginEvent
 import org.alter.game.pluginnew.event.impl.NpcClickEvent
-import org.alter.impl.skills.Pickpocketing
 import org.alter.skills.thieving.PickPocketingDefinitions.npcDataByCategory
 import org.alter.skills.thieving.PickPocketingDefinitions.npcDataById
 import org.generated.tables.thieving.SkillThievingPickpocketingRow
@@ -90,9 +89,8 @@ class PickpocketingEvents : PluginEvent() {
     }
 
     private fun pickpocketNpc(player: Player, npc: Npc, data: SkillThievingPickpocketingRow) {
-        val error = canPickpocket(player, npc, data)
-        if (error != null) {
-            player.message(error)
+        canPickpocket(player, npc, data)?.let {
+            player.message(it)
             return
         }
 
@@ -103,8 +101,12 @@ class PickpocketingEvents : PluginEvent() {
         player.animate("sequences.human_pickpocket")
 
         if (success) {
+            if (data.coinPouch != null) {
+                player.inventory.add(data.coinPouch)
+            }
             player.addXp(Skills.THIEVING, data.xp)
             player.message("You successfully pick the ${npc.def.name}'s pocket.")
+
         } else {
             player.message("You fail to pick the ${npc.def.name}'s pocket.")
             npc.animate("sequences.human_unarmedpunch")
@@ -113,4 +115,6 @@ class PickpocketingEvents : PluginEvent() {
             // TODO: Implement stun time lock
         }
     }
+
+
 }
