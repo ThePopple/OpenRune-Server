@@ -1,0 +1,52 @@
+[gamevals.tables]
+skill_thieving_pickpocketing = 1236
+man_pickpocketing_droptable = 1237
+farmer_pickpocketing_droptable = 1238
+ham_member_pickpocketing_droptable = 1239
+warrior_pickpocketing_droptable = 1240
+villager_pickpocketing_droptable = 1241
+rogue_pickpocketing_droptable = 1242
+cave_goblin_pickpocketing_droptable = 1243
+master_farmer_pickpocketing_droptable = 1244
+guard_pickpocketing_droptable = 1245
+fremennik_citizen_pickpocketing_droptable = 1246
+desert_bandit_pickpocketing_droptable = 1247
+knight_pickpocketing_droptable = 1248
+watchman_pickpocketing_droptable = 1249
+paladin_pickpocketing_droptable = 1250
+gnome_pickpocketing_droptable = 1251
+hero_pickpocketing_droptable = 1252
+vyre_pickpocketing_droptable = 1253
+elf_pickpocketing_droptable = 1254
+tzhaar_pickpocketing_droptable = 1255
+
+[gamevals.dbrows]
+man = 97038
+woman = 97039
+farmer = 97040
+male_ham_member = 97041
+female_ham_member = 97042
+al_kharid_warrior = 97043
+warrior = 97044
+rogue = 97045
+cave_goblin = 97046
+master_farmer = 97047
+guard = 97048
+menaphite_thug = 97049
+knight_of_ardougne = 97050
+knight_of_varlamore = 97051
+paladin = 97052
+gnome = 97053
+hero = 97054
+elf = 97055
+desert_bandit = 97056
+fremennik_citizen = 97057
+vyre = 97058
+yanille_watchman = 97059
+bearded_pollnivnian_bandit = 97060
+pollnivnian_bandit = 97061
+digsite_workman = 97062
+villager = 97063
+wealthy_citizen = 97064
+tzhaar = 97065
+

@@ -1,12 +1,7 @@
 package org.alter
 
-import com.squareup.kotlinpoet.CHAR
 import dev.openrune.OsrsCacheProvider
 import dev.openrune.cache.gameval.GameValHandler
-import dev.openrune.cache.gameval.GameValHandler.elementAs
-import dev.openrune.cache.gameval.impl.Interface
-import dev.openrune.cache.gameval.impl.Sprite
-import dev.openrune.cache.gameval.impl.Table
 import dev.openrune.cache.tools.Builder
 import dev.openrune.cache.tools.CacheEnvironment
 import dev.openrune.cache.tools.dbtables.PackDBTables
@@ -14,7 +9,6 @@ import dev.openrune.cache.tools.tasks.CacheTask
 import dev.openrune.cache.tools.tasks.TaskType
 import dev.openrune.cache.tools.tasks.impl.defs.PackConfig
 import dev.openrune.definition.GameValGroupTypes
-import dev.openrune.definition.constants.use
 import dev.openrune.definition.type.DBRowType
 import dev.openrune.definition.util.VarType
 import dev.openrune.filesystem.Cache
@@ -23,26 +17,21 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.alter.codegen.startGeneration
 import org.alter.gamevals.GameValProvider
 import org.alter.gamevals.GamevalDumper
-import org.alter.impl.skills.Firemaking
-import org.alter.impl.misc.FoodTable
-import org.alter.impl.skills.PrayerTable
 import org.alter.impl.StatComponents
+import org.alter.impl.misc.FoodTable
 import org.alter.impl.misc.TeleTabs
-import org.alter.impl.skills.Woodcutting
-import org.alter.impl.skills.Herblore
-import org.alter.impl.skills.Mining
+import org.alter.impl.skills.*
 import org.alter.impl.skills.runecrafting.Alters
 import org.alter.impl.skills.runecrafting.CombinationRune
 import org.alter.impl.skills.runecrafting.RunecraftRune
 import org.alter.impl.skills.runecrafting.Tiara
-import java.io.DataOutputStream
+import org.alter.impl.skills.thieving.Pickpocketing
 import java.io.File
-import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-fun getCacheLocation() = File("../data/", "cache").path
+fun getCacheLocation(): String = File("../data/", "cache").path
 fun getRawCacheLocation(dir: String) = File("../data/", "raw-cache/$dir/")
 
 fun tablesToPack() = listOf(
@@ -66,6 +55,26 @@ fun tablesToPack() = listOf(
     Tiara.tiara(),
     RunecraftRune.runecraftRune(),
     CombinationRune.runecraftComboRune(),
+    Pickpocketing.npcs(),
+    Pickpocketing.manDropTable,
+    Pickpocketing.farmerDropTable,
+    Pickpocketing.hamMemberDropTable,
+    Pickpocketing.warriorDropTable,
+    Pickpocketing.villagerDropTable,
+    Pickpocketing.rogueDropTable,
+    Pickpocketing.caveGoblinDropTable,
+    Pickpocketing.masterFarmerDropTable,
+    Pickpocketing.guardDropTable,
+    Pickpocketing.fremennikCitizenDropTable,
+    Pickpocketing.desertBanditDropTable,
+    Pickpocketing.knightOfArdougneDropTable,
+    Pickpocketing.yanilleWatchmanDropTable,
+    Pickpocketing.paladinDropTable,
+    Pickpocketing.gnomeDropTable,
+    Pickpocketing.heroDropTable,
+    Pickpocketing.vyreDropTable,
+    Pickpocketing.elfDropTable,
+    Pickpocketing.tzhaarDropTable,
 )
 
 private val logger = KotlinLogging.logger {}
@@ -103,7 +112,7 @@ fun downloadRev(type: TaskType) {
 
             val cache = Cache.load(File(getCacheLocation()).toPath())
 
-            GamevalDumper.dumpGamevals(cache,rev.first)
+            GamevalDumper.dumpGamevals(cache, rev.first)
 
 
             buildCache(rev)
@@ -118,7 +127,7 @@ fun downloadRev(type: TaskType) {
 
 
 data class ColInfo(
-    val types: MutableMap<Int,VarType> = mutableMapOf(),
+    val types: MutableMap<Int, VarType> = mutableMapOf(),
     var optional: Boolean = false,
     var noData: Boolean = false
 )
@@ -141,15 +150,15 @@ fun buildCache(rev: Triple<Int, Int, String>) {
 
     val cache = Cache.load(File(getCacheLocation()).toPath())
 
-    GamevalDumper.dumpCols(cache,rev.first)
+    GamevalDumper.dumpCols(cache, rev.first)
 
     val type = GameValHandler.readGameVal(GameValGroupTypes.TABLETYPES, cache = cache, rev.first)
 
-    val rows : MutableMap<Int, DBRowType> = emptyMap<Int, DBRowType>().toMutableMap()
+    val rows: MutableMap<Int, DBRowType> = emptyMap<Int, DBRowType>().toMutableMap()
 
-    OsrsCacheProvider.DBRowDecoder().load(cache,rows)
+    OsrsCacheProvider.DBRowDecoder().load(cache, rows)
 
-    startGeneration(type,rows)
+    startGeneration(type, rows)
 }
 
 
