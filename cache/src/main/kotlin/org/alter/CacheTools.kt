@@ -17,7 +17,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.alter.codegen.startGeneration
 import org.alter.gamevals.GameValProvider
 import org.alter.gamevals.GamevalDumper
-import org.alter.impl.PickpocketingTable
 import org.alter.impl.StatComponents
 import org.alter.impl.misc.FoodTable
 import org.alter.impl.misc.TeleTabs
@@ -55,7 +54,26 @@ fun tablesToPack() = listOf(
     Tiara.tiara(),
     RunecraftRune.runecraftRune(),
     CombinationRune.runecraftComboRune(),
-    PickpocketingTable.skillTable()
+    Pickpocketing.npcs(),
+    Pickpocketing.manDropTable,
+    Pickpocketing.farmerDropTable,
+    Pickpocketing.hamMemberDropTable,
+    Pickpocketing.warriorDropTable,
+    Pickpocketing.villagerDropTable,
+    Pickpocketing.rogueDropTable,
+    Pickpocketing.caveGoblinDropTable,
+    Pickpocketing.masterFarmerDropTable,
+    Pickpocketing.guardDropTable,
+    Pickpocketing.fremennikCitizenDropTable,
+    Pickpocketing.desertBanditDropTable,
+    Pickpocketing.knightOfArdougneDropTable,
+    Pickpocketing.yanilleWatchmanDropTable,
+    Pickpocketing.paladinDropTable,
+    Pickpocketing.gnomeDropTable,
+    Pickpocketing.heroDropTable,
+    Pickpocketing.vyreDropTable,
+    Pickpocketing.elfDropTable,
+    Pickpocketing.tzhaarDropTable,
 )
 
 private val logger = KotlinLogging.logger {}

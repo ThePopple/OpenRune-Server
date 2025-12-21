@@ -11,6 +11,9 @@ import org.alter.game.model.entity.Player
 import org.alter.game.pluginnew.PluginEvent
 import org.alter.game.pluginnew.event.impl.NpcClickEvent
 import org.alter.impl.skills.Pickpocketing
+import org.alter.skills.thieving.PickPocketingDefinitions.npcDataByCategory
+import org.alter.skills.thieving.PickPocketingDefinitions.npcDataById
+import org.generated.tables.thieving.SkillThievingPickpocketingRow
 
 class PickpocketingEvents : PluginEvent() {
 
@@ -22,7 +25,7 @@ class PickpocketingEvents : PluginEvent() {
         allNpcs.forEach { (_, npcDef) ->
             if (!npcDef.actions.contains("Pickpocket")) return@forEach
             if (npcDef.category != -1) {
-                val data = Pickpocketing.byCategory(npcDef.category)
+                val data = npcDataByCategory(npcDef.category)
                 if (data == null) {
                     logger.warn { "No pickpocketing data found for NPC category ${npcDef.category} (NPC id:name - ${npcDef.name}:${npcDef.id})" }
                     return@forEach
@@ -37,7 +40,7 @@ class PickpocketingEvents : PluginEvent() {
                     }
                 }
             } else {
-                val data = Pickpocketing.byNpcId(npcDef.id)
+                val data = npcDataById(npcDef.id)
                 if (data == null) {
                     logger.warn { "No pickpocketing data found for NPC id:name - ${npcDef.name}:${npcDef.id}" }
                     return@forEach
@@ -59,7 +62,7 @@ class PickpocketingEvents : PluginEvent() {
     }
 
 
-    private fun canPickpocket(player: Player, npc: Npc, data: Pickpocketing.PickpocketNPCData): String? {
+    private fun canPickpocket(player: Player, npc: Npc, data: SkillThievingPickpocketingRow): String? {
         if (player.getSkills().getCurrentLevel(Skills.THIEVING) < data.level) {
             return "You need a thieving level of ${data.level} to pickpocket this NPC."
         }
@@ -86,7 +89,7 @@ class PickpocketingEvents : PluginEvent() {
         return null
     }
 
-    private fun pickpocketNpc(player: Player, npc: Npc, data: Pickpocketing.PickpocketNPCData) {
+    private fun pickpocketNpc(player: Player, npc: Npc, data: SkillThievingPickpocketingRow) {
         val error = canPickpocket(player, npc, data)
         if (error != null) {
             player.message(error)
@@ -100,7 +103,7 @@ class PickpocketingEvents : PluginEvent() {
         player.animate("sequences.human_pickpocket")
 
         if (success) {
-            player.addXp(Skills.THIEVING, data.exp)
+            player.addXp(Skills.THIEVING, data.xp)
             player.message("You successfully pick the ${npc.def.name}'s pocket.")
         } else {
             player.message("You fail to pick the ${npc.def.name}'s pocket.")
