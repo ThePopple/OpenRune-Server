@@ -17,10 +17,15 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.alter.codegen.startGeneration
 import org.alter.gamevals.GameValProvider
 import org.alter.gamevals.GamevalDumper
-import org.alter.impl.StatComponents
+import org.alter.impl.GameframeTable
+import org.alter.impl.skills.Firemaking
 import org.alter.impl.misc.FoodTable
+import org.alter.impl.skills.PrayerTable
+import org.alter.impl.StatComponents
 import org.alter.impl.misc.TeleTabs
-import org.alter.impl.skills.*
+import org.alter.impl.skills.Woodcutting
+import org.alter.impl.skills.Herblore
+import org.alter.impl.skills.Mining
 import org.alter.impl.skills.runecrafting.Alters
 import org.alter.impl.skills.runecrafting.CombinationRune
 import org.alter.impl.skills.runecrafting.RunecraftRune
@@ -31,7 +36,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-fun getCacheLocation(): String = File("../data/", "cache").path
+fun getCacheLocation() = File("../data/", "cache").path
 fun getRawCacheLocation(dir: String) = File("../data/", "raw-cache/$dir/")
 
 fun tablesToPack() = listOf(
@@ -55,6 +60,7 @@ fun tablesToPack() = listOf(
     Tiara.tiara(),
     RunecraftRune.runecraftRune(),
     CombinationRune.runecraftComboRune(),
+    GameframeTable.gameframe(),
     Pickpocketing.npcs(),
     Pickpocketing.manDropTable,
     Pickpocketing.farmerDropTable,
@@ -137,7 +143,7 @@ fun buildCache(rev: Triple<Int, Int, String>) {
 
     val tasks: List<CacheTask> = listOf(
         PackConfig(File("../data/raw-cache/server")),
-        PackServerConfig(),
+        PackServerConfig(File("../data/raw-cache/server")),
     ).toMutableList()
 
     val builder = Builder(type = TaskType.BUILD, cacheLocation = File(getCacheLocation()))
