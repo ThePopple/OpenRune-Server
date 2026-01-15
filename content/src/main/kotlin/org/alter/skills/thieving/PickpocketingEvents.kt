@@ -5,6 +5,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.alter.api.Skills
 import org.alter.api.ext.hit
 import org.alter.api.ext.message
+import org.alter.api.ext.stun
 import org.alter.api.success
 import org.alter.game.model.entity.Npc
 import org.alter.game.model.entity.Player
@@ -23,6 +24,7 @@ class PickpocketingEvents : PluginEvent() {
 
         allNpcs.forEach { (_, npcDef) ->
             if (!npcDef.actions.contains("Pickpocket")) return@forEach
+
             if (npcDef.category != -1) {
                 val data = npcDataByCategory(npcDef.category)
                 if (data == null) {
@@ -66,7 +68,7 @@ class PickpocketingEvents : PluginEvent() {
             return "You need a thieving level of ${data.level} to pickpocket this NPC."
         }
 
-        if (player.inventory.isFull) {
+        if (player.inventory.isFull()) {
             return "You don't have enough inventory space to pickpocket."
         }
 
@@ -104,6 +106,7 @@ class PickpocketingEvents : PluginEvent() {
             if (data.coinPouch != null) {
                 player.inventory.add(data.coinPouch)
             }
+
             player.addXp(Skills.THIEVING, data.xp)
             player.message("You successfully pick the ${npc.def.name}'s pocket.")
 
@@ -112,7 +115,7 @@ class PickpocketingEvents : PluginEvent() {
             npc.animate("sequences.human_unarmedpunch")
             player.hit((data.stunDamageMin..data.stunDamageMax).random())
             player.animate("sequences.stunned")
-            // TODO: Implement stun time lock
+            player.stun(data.stunDuration)
         }
     }
 
