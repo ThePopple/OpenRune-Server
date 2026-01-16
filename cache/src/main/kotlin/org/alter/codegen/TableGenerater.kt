@@ -288,9 +288,26 @@ fun generateTable(table: TableDef, outputDir: File) {
     }
 
     val companion = TypeSpec.companionObjectBuilder()
+        // lowercase id const
+        .addProperty(
+            PropertySpec.builder("id", String::class)
+                .addModifiers(KModifier.CONST)
+                .initializer("%S", "tables.${table.tableName}")
+                .build()
+        )
+        // internalID getter
+        .addProperty(
+            PropertySpec.builder("internalID", INT)
+                .getter(
+                    FunSpec.getterBuilder()
+                        .addStatement("return %T.getRSCM(id)", rscm)
+                        .build()
+                )
+                .build()
+        )
         .addFunction(FunSpec.builder("all")
             .returns(listType.parameterizedBy(rowClassName))
-            .addStatement("return %T.table(%S).map { %T(it) }", dbHelper, "tables.${table.tableName}", rowClassName)
+            .addStatement("return %T.table(id).map { %T(it) }", dbHelper, rowClassName)
             .build())
         .addFunction(FunSpec.builder("getRow")
             .addParameter("row", INT)

@@ -9,56 +9,56 @@ import org.alter.api.ext.stun
 import org.alter.api.success
 import org.alter.game.model.entity.Npc
 import org.alter.game.model.entity.Player
+import org.alter.game.model.weight.impl.WeightItem
+import org.alter.game.model.weight.impl.WeightItemSet
 import org.alter.game.pluginnew.PluginEvent
 import org.alter.game.pluginnew.event.impl.NpcClickEvent
+import org.alter.game.util.DbHelper
 import org.alter.skills.thieving.PickPocketingDefinitions.npcDataByCategory
 import org.alter.skills.thieving.PickPocketingDefinitions.npcDataById
 import org.generated.tables.thieving.SkillThievingPickpocketingRow
+import org.generated.tables.thieving.ThievingDroptableRow
+import org.generated.tables.thieving.ThievingDroptableRow.Companion.id
 
 class PickpocketingEvents : PluginEvent() {
 
     private val logger = KotlinLogging.logger {}
 
+    val thievingDrops : MutableMap<Int, WeightItemSet> = emptyMap<Int, WeightItemSet>().toMutableMap()
+
+
     override fun init() {
-        val allNpcs = ServerCacheManager.getNpcs().filter { it.value.actions.contains("Pickpocket") }
 
-        allNpcs.forEach { (_, npcDef) ->
-            if (!npcDef.actions.contains("Pickpocket")) return@forEach
+        DbHelper.table("tables.thieving_droptable").forEach { rowData ->
+            val rowId = rowData.id
+            val dbRow = DbHelper.row(rowId)
+            val data = ThievingDroptableRow(dbRow)
 
-            if (npcDef.category != -1) {
-                val data = npcDataByCategory(npcDef.category)
-                if (data == null) {
-                    logger.warn { "No pickpocketing data found for NPC category ${npcDef.category} (NPC id:name - ${npcDef.name}:${npcDef.id})" }
-                    return@forEach
+            val itemSet = WeightItemSet().apply {
+                data.item.forEachIndexed { index, itemId ->
+                    val weight = data.weight[index]
+                    val amountRange = data.minAmount[index]..data.maxAmount[index]
+                    add(WeightItem(itemId, amountRange, weight))
                 }
-
-                on<NpcClickEvent> {
-                    where { npc.id == npcDef.id && optionName.equals("pickpocket", ignoreCase = true) }
-                    then {
-                        player.queue {
-                            pickpocketNpc(player, npc, data)
-                        }
-                    }
-                }
-            } else {
-                val data = npcDataById(npcDef.id)
-                if (data == null) {
-                    logger.warn { "No pickpocketing data found for NPC id:name - ${npcDef.name}:${npcDef.id}" }
-                    return@forEach
-                }
-
-                on<NpcClickEvent> {
-                    where { npc.id == npcDef.id && optionName.equals("pickpocket", ignoreCase = true) }
-                    then {
-                        player.queue {
-                            pickpocketNpc(player, npc, data)
-                        }
-                    }
-                }
-
-                // TODO: Implement NPC id list handling for pickpocketing when no category is defined
             }
 
+            thievingDrops[rowId] = itemSet
+        }
+
+        on<NpcClickEvent> {
+            where { npcDataById(npc.id) != null }
+            then {
+                player.queue {
+                    pickpocketNpc(player, npc, npcDataById(npc.id)!!)
+                }
+            }
+            otherwise {
+                where { npc.def.category != -1 && npc.def.actions.contains("Pickpocket") }
+                then {
+                    val data = npcDataByCategory(npc.def.category)
+                    pickpocketNpc(player, npc, data!!)
+                }
+            }
         }
     }
 
@@ -95,6 +95,10 @@ class PickpocketingEvents : PluginEvent() {
             player.message(it)
             return
         }
+
+        val table = thievingDrops[data.droptable]
+
+        println(table)
 
         val lvl = player.getSkills().getCurrentLevel(Skills.THIEVING)
         val success = success(data.lowChance, data.highChance, lvl)

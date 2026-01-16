@@ -31,6 +31,7 @@ import org.alter.impl.skills.runecrafting.CombinationRune
 import org.alter.impl.skills.runecrafting.RunecraftRune
 import org.alter.impl.skills.runecrafting.Tiara
 import org.alter.impl.skills.thieving.Pickpocketing
+import org.alter.impl.skills.thieving.ThievingDropTable
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -62,25 +63,7 @@ fun tablesToPack() = listOf(
     CombinationRune.runecraftComboRune(),
     GameframeTable.gameframe(),
     Pickpocketing.npcs(),
-    Pickpocketing.manDropTable,
-    Pickpocketing.farmerDropTable,
-    Pickpocketing.hamMemberDropTable,
-    Pickpocketing.warriorDropTable,
-    Pickpocketing.villagerDropTable,
-    Pickpocketing.rogueDropTable,
-    Pickpocketing.caveGoblinDropTable,
-    Pickpocketing.masterFarmerDropTable,
-    Pickpocketing.guardDropTable,
-    Pickpocketing.fremennikCitizenDropTable,
-    Pickpocketing.desertBanditDropTable,
-    Pickpocketing.knightOfArdougneDropTable,
-    Pickpocketing.yanilleWatchmanDropTable,
-    Pickpocketing.paladinDropTable,
-    Pickpocketing.gnomeDropTable,
-    Pickpocketing.heroDropTable,
-    Pickpocketing.vyreDropTable,
-    Pickpocketing.elfDropTable,
-    Pickpocketing.tzhaarDropTable,
+    ThievingDropTable.createThievingDropTable()
 )
 
 private val logger = KotlinLogging.logger {}
