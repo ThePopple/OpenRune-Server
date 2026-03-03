@@ -7,6 +7,8 @@ import org.alter.game.model.Tile
 import org.alter.game.model.entity.Npc
 import org.alter.game.model.entity.Pawn
 import org.alter.game.model.entity.Player
+import org.alter.game.model.timer.FROZEN_TIMER
+import org.alter.game.model.timer.STUN_TIMER
 import org.rsmod.routefinder.collision.CollisionStrategy
 import java.util.*
 import kotlin.math.abs
@@ -98,6 +100,12 @@ class MovementQueue(val pawn: Pawn) {
      * @TODO Add support for crawling. And have rule-set implemented for npc travel
      */
     fun cycle() {
+        // If the pawn is frozen or stunned, clear the movement queue and don't process movement
+        if (pawn.timers.has(FROZEN_TIMER) || pawn.timers.has(STUN_TIMER)) {
+            clear()
+            return
+        }
+
         var next = steps.poll()
         val pathSize = steps.size
         if (next != null) {

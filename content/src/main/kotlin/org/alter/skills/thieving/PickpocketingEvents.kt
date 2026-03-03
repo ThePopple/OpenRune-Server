@@ -9,11 +9,13 @@ import org.alter.api.ext.stun
 import org.alter.api.success
 import org.alter.game.model.entity.Npc
 import org.alter.game.model.entity.Player
+import org.alter.game.model.timer.STUN_TIMER
 import org.alter.game.model.weight.impl.WeightItem
 import org.alter.game.model.weight.impl.WeightItemSet
 import org.alter.game.pluginnew.PluginEvent
 import org.alter.game.pluginnew.event.impl.NpcClickEvent
 import org.alter.game.util.DbHelper
+import org.alter.rscm.RSCM
 import org.alter.skills.thieving.PickPocketingDefinitions.npcDataByCategory
 import org.alter.skills.thieving.PickPocketingDefinitions.npcDataById
 import org.generated.tables.thieving.SkillThievingPickpocketingRow
@@ -64,6 +66,11 @@ class PickpocketingEvents : PluginEvent() {
 
 
     private fun canPickpocket(player: Player, npc: Npc, data: SkillThievingPickpocketingRow): String? {
+        // Unsure of the correct order of these checks
+        if (player.timers.has(STUN_TIMER)) {
+            return "You're stunned!"
+        }
+
         if (player.getSkills().getCurrentLevel(Skills.THIEVING) < data.level) {
             return "You need a thieving level of ${data.level} to pickpocket this NPC."
         }
@@ -118,7 +125,6 @@ class PickpocketingEvents : PluginEvent() {
             player.message("You fail to pick the ${npc.def.name}'s pocket.")
             npc.animate("sequences.human_unarmedpunch")
             player.hit((data.stunDamageMin..data.stunDamageMax).random())
-            player.animate("sequences.stunned")
             player.stun(data.stunDuration)
         }
     }

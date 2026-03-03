@@ -54,7 +54,7 @@ object Pickpocketing {
             column(CATEGORY, 266)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 1)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -67,7 +67,7 @@ object Pickpocketing {
             column(CATEGORY, 492)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 1)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -81,7 +81,7 @@ object Pickpocketing {
             column(CATEGORY, 498)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 150)
             column(HIGH_CHANCE, 240)
         }
@@ -95,7 +95,7 @@ object Pickpocketing {
             columnRSCM(NPCS, "npcs.favour_male_ham_civilian")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 3)
-            column(STUN_DURATION, 6)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 135)
             column(HIGH_CHANCE, 239)
         }
@@ -109,7 +109,7 @@ object Pickpocketing {
             columnRSCM(NPCS, "npcs.favour_female_ham_civilian")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 3)
-            column(STUN_DURATION, 6)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 135)
             column(HIGH_CHANCE, 239)
         }
@@ -122,7 +122,7 @@ object Pickpocketing {
             column(CATEGORY, 1728)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 100)
             column(HIGH_CHANCE, 240)
         }
@@ -135,7 +135,7 @@ object Pickpocketing {
             columnRSCM(NPCS, "npcs.al_kharid_warrior")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 100)
             column(HIGH_CHANCE, 240)
         }
@@ -148,7 +148,7 @@ object Pickpocketing {
             columnRSCM(NPCS, "npcs.feud_villager_1_1") // TODO: Add more npcs here
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 100)
             column(HIGH_CHANCE, 240)
         }
@@ -161,7 +161,7 @@ object Pickpocketing {
             columnRSCM(NPCS, "npcs.rogue", "npcs.wilderness_rogue")
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 75)
             column(HIGH_CHANCE, 240)
         }
@@ -174,7 +174,7 @@ object Pickpocketing {
             column(CATEGORY, 373)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 1)
-            column(STUN_DURATION, 7)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 100)  // Couldn't find a value for these chances so just went with
             column(HIGH_CHANCE, 240) // the common 100/240
         }
@@ -187,7 +187,7 @@ object Pickpocketing {
             column(CATEGORY, 641)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 3)
-            column(STUN_DURATION, 8)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 90)
             column(HIGH_CHANCE, 240)
         }
@@ -201,7 +201,7 @@ object Pickpocketing {
             column(CATEGORY, 470)
             column(STUN_DAMAGE_MIN, 1)
             column(STUN_DAMAGE_MAX, 2)
-            column(STUN_DURATION, 8)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -214,7 +214,7 @@ object Pickpocketing {
             columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_fremennik")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
-            column(STUN_DURATION, 9)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -227,7 +227,7 @@ object Pickpocketing {
             columnRSCM(NPCS, "npcs.fourdiamonds_sword_bandit_1", "npcs.fourdiamonds_sword_bandit_free")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
-            column(STUN_DURATION, 9)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -240,7 +240,7 @@ object Pickpocketing {
             column(CATEGORY, 1731)
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 4)
-            column(STUN_DURATION, 9)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -254,7 +254,7 @@ object Pickpocketing {
             columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_knight")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 4)
-            column(STUN_DURATION, 9)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -267,7 +267,7 @@ object Pickpocketing {
             columnRSCM(COIN_POUCH, "items.pickpocket_coin_pouch_watchman")
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
-            column(STUN_DURATION, 9)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -280,7 +280,7 @@ object Pickpocketing {
             column(CATEGORY, 1729)
             column(STUN_DAMAGE_MIN, 2)
             column(STUN_DAMAGE_MAX, 3)
-            column(STUN_DURATION, 9)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -293,7 +293,7 @@ object Pickpocketing {
             column(CATEGORY, 354)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
-            column(STUN_DURATION, 10)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -306,7 +306,7 @@ object Pickpocketing {
             column(CATEGORY, 1730)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
-            column(STUN_DURATION, 10)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -319,7 +319,7 @@ object Pickpocketing {
             column(CATEGORY, 1451)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
-            column(STUN_DURATION, 10)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -332,7 +332,7 @@ object Pickpocketing {
             column(CATEGORY, 1392)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
-            column(STUN_DURATION, 10)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
@@ -345,7 +345,7 @@ object Pickpocketing {
             column(CATEGORY, 431)
             column(STUN_DAMAGE_MIN, 3)
             column(STUN_DAMAGE_MAX, 4)
-            column(STUN_DURATION, 10)
+            column(STUN_DURATION, 5)
             column(LOW_CHANCE, 180)
             column(HIGH_CHANCE, 240)
         }
