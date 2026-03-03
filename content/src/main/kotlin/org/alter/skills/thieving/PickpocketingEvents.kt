@@ -103,10 +103,7 @@ class PickpocketingEvents : PluginEvent() {
             return
         }
 
-        val table = thievingDrops[data.droptable]
-
-        println(table)
-
+        val droptable = thievingDrops[data.droptable]
         val lvl = player.getSkills().getCurrentLevel(Skills.THIEVING)
         val success = success(data.lowChance, data.highChance, lvl)
 
@@ -116,6 +113,11 @@ class PickpocketingEvents : PluginEvent() {
         if (success) {
             if (data.coinPouch != null) {
                 player.inventory.add(data.coinPouch)
+            }
+
+            if (droptable != null) {
+                val item = droptable.getRandom()
+                player.inventory.add(item.id, item.amount)
             }
 
             player.addXp(Skills.THIEVING, data.xp)
