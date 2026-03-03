@@ -40,21 +40,21 @@ abstract class PluginEvent  {
         return config.invoke(EventListener(K::class)).submit()
     }
 
-    inline fun <reified K : Event> onEvent(noinline action: suspend K.() -> Unit): EventListener<K> {
-        val listener = EventListener(K::class)
-        listener.action = action
-        return listener.submit()
+    inline fun <reified K : Event> onEvent(
+        noinline action: suspend K.() -> Unit
+    ): EventListener<K> {
+        return EventListener(K::class)
+            .where { true }
+            .then(action)
+            .submit()
     }
 
     fun <K : Event> on(type: KClass<K>, config: EventListener<K>.() -> EventListener<K>): EventListener<K> {
         return config.invoke(EventListener(type)).submit()
     }
-    
+
     fun <K : Event> onEvent(type: KClass<K>, action: suspend K.() -> Unit): EventListener<K> {
-        val listener = EventListener(type)
-        listener.action = action
-        return listener.submit()
-    }
+        return EventListener(type).where { true }.then(action).submit() }
 
     fun <K : Event> addFilter(type: KClass<K>, filter: K.() -> Boolean) {
         EventManager.addFilter<K>(type.java, filter)

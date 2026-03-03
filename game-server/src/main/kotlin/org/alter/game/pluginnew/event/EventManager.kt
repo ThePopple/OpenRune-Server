@@ -85,15 +85,21 @@ object EventManager {
         listeners.compute(event) { _, old -> (old ?: emptyList()) + listener }
 
         CoroutineScope(context).launch {
-            getChannel<E>(event).collect {
+            getChannel<E>(event).collect { emitted ->
                 try {
-                    if (listener.condition(it)) {
-                        listener.action(it)
+                    @Suppress("UNCHECKED_CAST")
+                    val e = emitted as E
+
+                    if (getFilters<E>(event).all { it.test(e) }) {
+                        listener.execute(e)
+
                         if (listener.singleUse) {
-                            listeners.compute(event) { _, old -> old?.filter { it !== listener } }
+                            listeners.compute(event) { _, old ->
+                                old?.filter { it !== listener }
+                            }
                             cancel(CancellationException())
                         }
-                    } else listener.otherwiseAction(it)
+                    }
                 } catch (_: CancellationException) {
                 } catch (ex: Exception) {
                     ex.printStackTrace()
@@ -121,8 +127,8 @@ object EventManager {
                             @Suppress("UNCHECKED_CAST")
                             val l = listener as EventListener<E>
                             if (getFilters<E>(event.javaClass).all { it.test(event) }) {
-                                if (l.condition(event)) { l.action(event); markHandled(true) }
-                                else l.otherwiseAction(event)
+                                l.execute(event)
+                                markHandled(true)
                             }
                         }
 
@@ -130,8 +136,10 @@ object EventManager {
                             @Suppress("UNCHECKED_CAST")
                             val l = listener as ReturnableEventListener<E, Any>
                             if (getFilters<E>(event.javaClass).all { it.test(event) }) {
-                                if (l.condition(event)) { l.action(event); markHandled(true) }
-                                else l.otherwiseAction(event)
+                                if (l.condition(event)) {
+                                    l.action(event)
+                                    markHandled(true)
+                                } else l.otherwiseAction(event)
                             }
                         }
                     }
